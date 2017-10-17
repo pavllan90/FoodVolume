@@ -2,7 +2,7 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
-#include "energeticvolume.h"
+#include "tree.h"
 
 namespace Ui {
 class MainWindow;
@@ -18,13 +18,15 @@ public:
     
 private:
     Ui::MainWindow *ui;
-    EnergeticVolume *mass[10];
-    int counter;
+    Tree tree;
 
 private slots:
-    void add();
-    void showMass();
-
+    void add_tr();
+    void show_tr();
+    void save_tr();
+    void load_tr();
+    void del_tr();
+    void closest();
 };
 
 #endif // MAINWINDOW_H

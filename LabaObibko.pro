@@ -12,9 +12,13 @@ TEMPLATE = app
 
 SOURCES += main.cpp\
         mainwindow.cpp \
-    energeticvolume.cpp
+    energeticvolume.cpp \
+    node.cpp \
+    tree.cpp
 
 HEADERS  += mainwindow.h \
-    energeticvolume.h
+    energeticvolume.h \
+    node.h \
+    tree.h
 
 FORMS    += mainwindow.ui

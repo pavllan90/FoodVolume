@@ -6,9 +6,12 @@ MainWindow::MainWindow(QWidget *parent) :
     ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
-    counter = 0;
-    QObject::connect(ui->pushButton, SIGNAL(clicked()), this, SLOT(add()));
-    QObject::connect(ui->pushButton_2, SIGNAL(clicked()), this, SLOT(showMass()));
+    QObject::connect(ui->pushButton, SIGNAL(clicked()), this, SLOT(add_tr()));
+    QObject::connect(ui->pushButton_2, SIGNAL(clicked()), this, SLOT(show_tr()));
+    QObject::connect(ui->pushButton_3, SIGNAL(clicked()), this, SLOT(save_tr()));
+    QObject::connect(ui->pushButton_4, SIGNAL(clicked()), this, SLOT(load_tr()));
+    QObject::connect(ui->pushButton_5, SIGNAL(clicked()), this, SLOT(del_tr()));
+    QObject::connect(ui->pushButton_6, SIGNAL(clicked()), this, SLOT(closest()));
 }
 
 MainWindow::~MainWindow()
@@ -16,29 +19,39 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
-void MainWindow::add()
+void MainWindow::closest()
 {
-    mass[counter] = new EnergeticVolume(ui->lineEdit->text(),
+    tree.closest(ui->lineEdit_11->text().toFloat()).show();
+}
+
+void MainWindow::add_tr()
+{
+    EnergeticVolume *a = new EnergeticVolume(ui->lineEdit->text(),
                                         ui->lineEdit_2->text(),
                                         ui->lineEdit_3->text(),
                                         ui->lineEdit_4->text(),
                                         ui->lineEdit_5->text(),
                                         ui->lineEdit_6->text(),
                                         ui->lineEdit_7->text());
-    counter+=1;
+    tree.keyInsert(ui->lineEdit_8->text().toInt(), *a);
 }
 
-void MainWindow::showMass()
+void MainWindow::show_tr()
 {
-    ui->textEdit->append("--------------------\n");
-    for(int i = 0; i<counter; i++)
-        ui->textEdit->append("\nDish #"+QString::number(i+1)+
-                             "\nName: "+mass[i]->getName()+
-                             "\nWeight: "+QString::number(mass[i]->getWeight())+
-                             "\nFat: "+QString::number(mass[i]->getFat())+
-                             "\nProteins: "+QString::number(mass[i]->getProteins())+
-                             "\nCarbs: "+QString::number(mass[i]->getCarbonhydrates())+
-                             "\nAcids: "+QString::number(mass[i]->getAcids())+
-                             "\nFibers: "+QString::number(mass[i]->getFfibers())+
-                             "\nVolume: "+QString::number(mass[i]->countVolume())+"\n");
+    tree.show();
+}
+
+void MainWindow::save_tr()
+{
+    tree.save(ui->lineEdit_9->text());
+}
+
+void MainWindow::load_tr()
+{
+    tree.load(ui->lineEdit_9->text());
+}
+
+void MainWindow::del_tr()
+{
+    tree.keyDelete(ui->lineEdit_10->text().toInt());
 }

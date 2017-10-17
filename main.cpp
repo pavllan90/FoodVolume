@@ -1,27 +1,20 @@
 #include <QtGui/QApplication>
 #include "mainwindow.h"
+#include <cassert>
 
 int main(int argc, char *argv[])
 {
-    EnergeticVolume x;
-    x.show();
-    EnergeticVolume y ("Antrecoat", "254.2", "12.5", "23.1", "35.3", "10.01", "19.1");
-    y.show();
-    EnergeticVolume z = y;
-    z.show();
-    z.setName("Icecream");
-    z.setParameters("4.3", "100.4", "3.1", "3", "34.3", "1");
-    z.show();
-    z.setParameters("d", "23", "11", "-32", "5", "5");
-    z.show();
-    z.setParameters("340", "23", "1f1", "32", "5", "5");
-    z.show();
-    z.setParameters("340", "23", "11", "32", "5", "5");
-    z.show();
-
+   Tree tree;
+   assert(tree.size()==0&&tree.isEmpty());
+   tree.keyInsert(43, EnergeticVolume("Pasta", "22.1","23", "10", "10", "5", "5"));
+   assert(tree.size()==1&&!tree.isEmpty());
+   assert(tree.keySearch(tree.getRoot(), 43)->data.getName()=="Pasta");
+   tree.keyInsert(43, EnergeticVolume("Fried potatto",  "22.1","23", "10", "10", "5", "5"));
+   assert(tree.size()==1&&tree.keySearch(tree.getRoot(), 43)->data.getName()=="Pasta");
     QApplication a(argc, argv);
     MainWindow w;
     w.show();
 
     return a.exec();
+   return 0;
 }
