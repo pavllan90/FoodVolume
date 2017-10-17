@@ -24,11 +24,11 @@ Tree::Tree(const Tree &a)
 
 Tree Tree::closest(float vol)
 {
-    Tree* result = new Tree;
+    Tree result;
     int min = root->data.countVolume();
     minimum(vol, &min, root);
-    recursive(min, vol, result, root);
-    return *result;
+    recursive(min, vol, &result, root);
+    return result;
 
 }
 
