@@ -17,12 +17,12 @@ Tree::Tree(const Tree &a)
     while(temp->left&&!temp->left->is_Leaf) temp = temp->left;
     while(temp&&!temp->is_Leaf)
     {
-        keyInsert(temp->key, temp->data);
-        temp = getNext(temp);
+        keyInsert(temp->data);
+        temp = nextNode(temp);
     }
 }
 
-Tree Tree::closest(float vol)
+Tree Tree::closestByVolume(float vol)
 {
     Tree result;
     int min = root->data.countVolume();
@@ -46,7 +46,7 @@ void Tree::recursive(int min, float vol, Tree *result, Node *_root)
 {
     if(!_root->is_Leaf)
     {
-        if(abs(_root->data.countVolume()-vol)==min) result->keyInsert(_root->key, _root->data);
+        if(abs(_root->data.countVolume()-vol)==min) result->keyInsert(_root->data);
         recursive(min, vol, result, _root->left);
         recursive(min, vol, result, _root->right);
     }
@@ -65,14 +65,14 @@ void Tree::save(QString file_name)
     }
     while(temp)
     {
-        stream<<QString::number(temp->key)<<temp->data.getName()
+        stream<<temp->data.getName()
              <<QString::number(temp->data.getWeight())
              <<QString::number(temp->data.getFat())
              <<QString::number(temp->data.getProteins())
              <<QString::number(temp->data.getCarbonhydrates())
              <<QString::number(temp->data.getAcids())
              <<QString::number(temp->data.getFfibers());
-        temp=getNext(temp);
+        temp=nextNode(temp);
     }
     file.close();
 }
@@ -92,51 +92,101 @@ void Tree::load(QString file_name)
         QString _carbonhydrates;
         QString _acids;
         QString _ffibers;
-        QString _key;
-        stream>>_key>>_name>>_weight>>_fat>>_proteins>>_carbonhydrates>>_acids>>_ffibers;
+        stream>>_name>>_weight>>_fat>>_proteins>>_carbonhydrates>>_acids>>_ffibers;
         EnergeticVolume temp (_name, _weight,
                               _fat, _proteins,
                               _carbonhydrates,
                               _acids, _ffibers);
-        keyInsert(_key.toInt(), temp);
+        keyInsert(temp);
     }
     file.close();
 }
 
-void Tree::keyDelete(int _key)
+void Tree::keyDelete(QString _key)
 {
-    Node* delNode =NULL;
-    delNode = keySearch(root, _key);
-    if(delNode)deleteOne(delNode);
-    else std::cout<<"No key"<<std::endl;
+    Node* n =NULL;
+    n = nodeSearch(root, _key);
+    if(n)
+    {
+        Node* temp;
+        if(!n->right->is_Leaf)
+        {
+            temp = n->right;
+            while(!temp->left->is_Leaf) temp=temp->left;
+            n->data = temp->data;
+            n->key = temp->key;
+        }
+        else if(!n->left->is_Leaf)
+            {
+                temp = n->left;
+                while(!temp->right->is_Leaf) temp = temp->right;
+                n->data = temp->data;
+                n->key = temp->key;
+            }
+            else temp = n;
+        Node* child = temp->right->is_Leaf ? temp->left : temp->right;
+        child->parent = temp->parent;
+        if(temp->parent)
+        {
+            if(temp->parent->left == temp) temp->parent->left = child;
+            else temp->parent->right = child;
+        }
+        temp->parent =NULL;
+        if (temp->red == 0) {
+                if (child->red ==1)
+                    child->red = 0;
+                else
+                    del1(child);
+        }
+        root = child;
+        while(root->parent) root = root->parent;
+        tree_size-=1;
+        delete temp;
+    }
 }
 
-Node* Tree::keySearch(Node *_root, int _key)
+Node* Tree::nodeSearch(Node *_root, QString _key)
 {
     if(_root&&!_root->is_Leaf)
     {
-        if(_root->key==_key) return _root;
+
+        if(_root->key==_key)
+        {
+            return _root;
+        }
         else
         {
-            if(_key<_root->key) return keySearch(_root->left, _key);
-            else return keySearch(_root->right, _key);
+            if(keysCompare(_root->key,_key)) return nodeSearch(_root->left, _key);
+            else return nodeSearch(_root->right, _key);
             return NULL;
         }
     }
     else return NULL;
 }
 
-void Tree::show(Node *_root)
+void Tree::show()
+{
+    showNode(root);
+}
+
+void Tree::showNode(Node *_root)
 {
     if(_root == 0) _root = root;
     if(_root)
     {
         if(!_root->is_Leaf){
-        show(_root->left);
+        showNode(_root->left);
         _root->data.show();
-        show(_root->right);
+        showNode(_root->right);
         }
     }
+}
+
+EnergeticVolume Tree::keySearch(QString _key)
+{
+    Node *res = NULL;
+    res = nodeSearch(root, _key);
+    if(res) return res->data;
 }
 
 int Tree::size()
@@ -150,7 +200,7 @@ bool Tree::isEmpty()
     else return true;
 }
 
-Node* Tree::getNext(Node *n)
+Node* Tree::nextNode(Node *n)
 {
     Node* next = n;
     if(!n->right->is_Leaf)
@@ -159,47 +209,9 @@ Node* Tree::getNext(Node *n)
         while(!next->left->is_Leaf) next = next->left;
         return next;
     }
-    else if(n->parent->left==n) return next->parent;
-    else if(n->parent->parent&&n->parent->parent->left==n->parent) return next->parent;
+    else if(n->parent&&n->parent->left==n) return next->parent;
+    else if(n->parent&&n->parent->parent&&n->parent->parent->left==n->parent) return next->parent->parent;
     else return NULL;
-}
-
-void Tree::deleteOne(Node *n)
-{
-    Node* temp;
-    if(!n->right->is_Leaf)
-    {
-        temp = n->right;
-        while(!temp->left->is_Leaf) temp=temp->left;
-        n->data = temp->data;
-        n->key = temp->key;
-    }
-    else if(!n->left->is_Leaf)
-        {
-            temp = n->left;
-            while(!temp->right->is_Leaf) temp = temp->right;
-            n->data = temp->data;
-            n->key = temp->key;
-        }
-        else temp = n;
-    Node* child = temp->right->is_Leaf ? temp->left : temp->right;
-    child->parent = temp->parent;
-    if(temp->parent)
-    {
-        if(temp->parent->left == temp) temp->parent->left = child;
-        else temp->parent->right = child;
-    }
-    temp->parent =NULL;
-    if (temp->red == 0) {
-            if (child->red ==1)
-                child->red = 0;
-            else
-                del1(child);
-    }
-    root = child;
-    while(root->parent) root = root->parent;
-    tree_size-=1;
-    delete temp;
 }
 
 void Tree::del1(Node* n)
@@ -239,11 +251,6 @@ void Tree::del3(Node* n)
         del1(n->parent);
     }
     else del4(n);
-}
-
-Node* Tree::getRoot()
-{
-    return root;
 }
 
 void Tree::del4(Node* n)
@@ -295,46 +302,57 @@ void Tree::del6(Node* n)
         }
 }
 
-void Tree::insert(EnergeticVolume a, int _key)
+bool Tree::keysCompare(QString a, QString b)
 {
-    Node* temp = new Node;
-    temp->data=a;
-    temp->key = _key;
-    if(!root) root = temp ,ins1(root);
+    int x = 0;
+    while(a.at(x)==b.at(x)) x+=1;
+    if(a.at(x)>b.at(x))
+    {
+        return true;
+    }
     else
     {
-        Node* r = root;
-        bool f = true;
-        while(!(r->left->is_Leaf&&r->right->is_Leaf)&&f)
-        {
-            if(r->key>=temp->key)
-            {
-                if(!r->left->is_Leaf)
-                    r=r->left;
-                else
-                    f = false;
-            }
-            else
-            {
-                if(!r->right->is_Leaf)
-                    r=r->right;
-                else f = false;
-            }
-        }
-        temp->parent=r;
-        if(temp->key>=r->key) r->right = temp;
-        else r->left = temp;
-        ins1(temp);
+        return false;
     }
-    while(root->parent) root = root->parent;
-    tree_size+=1;
 }
 
-void Tree::keyInsert(int _key, EnergeticVolume _data)
+void Tree::keyInsert(EnergeticVolume _data)
 {
-    Node* nex = keySearch(root, _key);
+    Node* nex = nodeSearch(root, _data.getName());
     if(!nex)
-        insert (_data, _key);
+    {
+        Node* temp = new Node;
+        temp->data=_data;
+        temp->key = _data.getName();
+        if(!root) root = temp , ins1(root);
+        else
+        {
+            Node* r = root;
+            bool f = true;
+            while(!(r->left->is_Leaf&&r->right->is_Leaf)&&f)
+            {
+                if(keysCompare(r->key,temp->key))
+                {
+                    if(!r->left->is_Leaf)
+                        r=r->left;
+                    else
+                        f = false;
+                }
+                else
+                {
+                    if(!r->right->is_Leaf)
+                        r=r->right;
+                    else f = false;
+                }
+            }
+            temp->parent=r;
+            if(keysCompare(temp->key,r->key)) r->right = temp;
+            else r->left = temp;
+            ins1(temp);
+        }
+        while(root->parent) root = root->parent;
+        tree_size+=1;
+    }
 }
 
 void Tree::ins1(Node* n)

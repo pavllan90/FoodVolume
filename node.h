@@ -9,7 +9,7 @@ public:
     Node();
     Node(Node *a);
     EnergeticVolume data;
-    int key;
+    QString key;
     Node *parent, *left, *right;
     bool red;
     bool is_Leaf;

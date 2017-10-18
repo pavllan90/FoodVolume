@@ -21,7 +21,7 @@ MainWindow::~MainWindow()
 
 void MainWindow::closest()
 {
-    tree.closest(ui->lineEdit_11->text().toFloat()).show();
+    tree.closestByVolume(ui->lineEdit_11->text().toFloat()).show();
 }
 
 void MainWindow::add_tr()
@@ -33,7 +33,7 @@ void MainWindow::add_tr()
                                         ui->lineEdit_5->text(),
                                         ui->lineEdit_6->text(),
                                         ui->lineEdit_7->text());
-    tree.keyInsert(ui->lineEdit_8->text().toInt(), *a);
+    tree.keyInsert(*a);
 }
 
 void MainWindow::show_tr()
@@ -53,5 +53,5 @@ void MainWindow::load_tr()
 
 void MainWindow::del_tr()
 {
-    tree.keyDelete(ui->lineEdit_10->text().toInt());
+    tree.keyDelete(ui->lineEdit_10->text());
 }

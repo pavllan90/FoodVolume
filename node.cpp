@@ -9,7 +9,7 @@ Node::Node()
     right = new Node (this);
     is_Leaf = false;
     red = 1;
-    key = -1;
+    key = "";
 }
 
 Node::Node(Node *a)
@@ -18,7 +18,7 @@ Node::Node(Node *a)
     left = right = NULL;
     red = 0;
     is_Leaf = true;
-    key = -1;
+    key = "";
 }
 
 Node* Node::grandparent()
