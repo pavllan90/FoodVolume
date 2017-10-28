@@ -21,12 +21,12 @@ private:
     Tree tree;
 
 private slots:
-    void add_tr();
-    void show_tr();
-    void save_tr();
-    void load_tr();
-    void del_tr();
-    void closest();
+    void addToTree();
+    void showTree();
+    void saveTree();
+    void loadTree();
+    void deleteByKey();
+    void closestByVolume();
 };
 
 #endif // MAINWINDOW_H

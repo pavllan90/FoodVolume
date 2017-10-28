@@ -9,10 +9,10 @@ public:
     Node();
     Node(Node *a);
     EnergeticVolume data;
-    QString key;
+    float key;
     Node *parent, *left, *right;
     bool red;
-    bool is_Leaf;
+    bool isLeaf;
     Node* grandparent();
     Node* uncle();
     Node* sibling();

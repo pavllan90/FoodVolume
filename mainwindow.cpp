@@ -6,12 +6,12 @@ MainWindow::MainWindow(QWidget *parent) :
     ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
-    QObject::connect(ui->pushButton, SIGNAL(clicked()), this, SLOT(add_tr()));
-    QObject::connect(ui->pushButton_2, SIGNAL(clicked()), this, SLOT(show_tr()));
-    QObject::connect(ui->pushButton_3, SIGNAL(clicked()), this, SLOT(save_tr()));
-    QObject::connect(ui->pushButton_4, SIGNAL(clicked()), this, SLOT(load_tr()));
-    QObject::connect(ui->pushButton_5, SIGNAL(clicked()), this, SLOT(del_tr()));
-    QObject::connect(ui->pushButton_6, SIGNAL(clicked()), this, SLOT(closest()));
+    QObject::connect(ui->pushButton, SIGNAL(clicked()), this, SLOT(addToTree()));
+    QObject::connect(ui->pushButton_2, SIGNAL(clicked()), this, SLOT(showTree()));
+    QObject::connect(ui->pushButton_3, SIGNAL(clicked()), this, SLOT(saveTree()));
+    QObject::connect(ui->pushButton_4, SIGNAL(clicked()), this, SLOT(loadTree()));
+    QObject::connect(ui->pushButton_5, SIGNAL(clicked()), this, SLOT(deleteByKey()));
+    QObject::connect(ui->pushButton_6, SIGNAL(clicked()), this, SLOT(closestByVolume()));
 }
 
 MainWindow::~MainWindow()
@@ -19,12 +19,12 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
-void MainWindow::closest()
+void MainWindow::closestByVolume()
 {
     tree.closestByVolume(ui->lineEdit_11->text().toFloat()).show();
 }
 
-void MainWindow::add_tr()
+void MainWindow::addToTree()
 {
     EnergeticVolume *a = new EnergeticVolume(ui->lineEdit->text(),
                                         ui->lineEdit_2->text(),
@@ -36,22 +36,22 @@ void MainWindow::add_tr()
     tree.keyInsert(*a);
 }
 
-void MainWindow::show_tr()
+void MainWindow::showTree()
 {
     tree.show();
 }
 
-void MainWindow::save_tr()
+void MainWindow::saveTree()
 {
     tree.save(ui->lineEdit_9->text());
 }
 
-void MainWindow::load_tr()
+void MainWindow::loadTree()
 {
     tree.load(ui->lineEdit_9->text());
 }
 
-void MainWindow::del_tr()
+void MainWindow::deleteByKey()
 {
-    tree.keyDelete(ui->lineEdit_10->text());
+    tree.keyDelete(ui->lineEdit_10->text().toFloat());
 }
