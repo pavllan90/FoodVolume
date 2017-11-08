@@ -2,8 +2,9 @@
 #define ENERGETICVOLUME_H
 
 #include <QString>
+#include "volume.h"
 
-class EnergeticVolume
+class EnergeticVolume : public Volume
 {
 public:
     EnergeticVolume();
@@ -26,6 +27,7 @@ public:
     float getAcids();
     float getFfibers();
     void show();
+    virtual int getType();
 private:
     QString name;
     float weight;

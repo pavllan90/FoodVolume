@@ -44,6 +44,11 @@ EnergeticVolume::~EnergeticVolume()
 
 }
 
+int EnergeticVolume::getType()
+{
+    return 0;
+}
+
 void EnergeticVolume::setParameters(QString _weight, QString _fat, QString _proteins, QString _carbonhydrates, QString _acids, QString _ffibers)
 {
     bool f = true, F = true;

@@ -1,0 +1,14 @@
+INPUT(
+./release\main.o
+./release\mainwindow.o
+./release\energeticvolume.o
+./release\node.o
+./release\tree.o
+./release\volume.o
+./release\complex.o
+./release\dishdialog.o
+./release\complexdialog.o
+./release\moc_mainwindow.o
+./release\moc_dishdialog.o
+./release\moc_complexdialog.o
+);

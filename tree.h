@@ -2,8 +2,10 @@
 #define TREE_H
 #include "node.h"
 #include "energeticvolume.h"
+#include "complex.h"
 #include <QFile>
 #include <cstddef>
+#include <QString>
 
 class Tree
 {
@@ -14,11 +16,12 @@ public:
     int size();
     bool isEmpty();
     void keyDelete(float _key);
-    void keyInsert(EnergeticVolume _data);
+    void keyInsert(Volume *_data);
     void save(QString file_name);
     void load(QString file_name);
-    EnergeticVolume closestByVolume(float vol);
-    EnergeticVolume keySearch(float _key);
+    Volume* closestByVolume(float vol);
+    Volume* keySearch(float _key);
+    Node* root;
 private:
     Node* nodeSearch(Node* _root, float _key);
     void showNode(Node *_root);
@@ -37,8 +40,7 @@ private:
     void sixDelete(Node *n);
     Node* nextNode(Node* n);
     int treeSize;
-    Node* root;
-    EnergeticVolume recursive(float vol, Node* _root);
+    Volume* recursive(float vol, Node* _root);
 };
 
 #endif // TREE_H

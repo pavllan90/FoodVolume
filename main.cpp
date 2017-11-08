@@ -19,6 +19,9 @@ int main(int argc, char *argv[])
 //    assert(tree.keySearch("Pasta").getName()==copy.keySearch("Pasta").getName());
 //    tree.keyDelete("Pasta");
 //    assert(tree.size()!=copy.size());
+    tree.keyInsert(new EnergeticVolume ());
+    tree.keyInsert(new Complex());
+    tree.show();
     QApplication a(argc, argv);
     MainWindow w;
     w.show();

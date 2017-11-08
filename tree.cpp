@@ -22,12 +22,12 @@ Tree::Tree(const Tree &a)
     }
 }
 
-EnergeticVolume Tree::closestByVolume(float vol)
+Volume* Tree::closestByVolume(float vol)
 {
     return recursive(vol, root);
 }
 
-EnergeticVolume Tree::recursive(float vol, Node *_root)
+Volume* Tree::recursive(float vol, Node *_root)
 {
     if(!_root->isLeaf)
     {
@@ -81,13 +81,54 @@ void Tree::save(QString file_name)
     }
     while(temp)
     {
-        stream<<temp->data.getName()
-             <<QString::number(temp->data.getWeight())
-             <<QString::number(temp->data.getFat())
-             <<QString::number(temp->data.getProteins())
-             <<QString::number(temp->data.getCarbonhydrates())
-             <<QString::number(temp->data.getAcids())
-             <<QString::number(temp->data.getFfibers());
+        stream<<QString::number(temp->data->getType());
+        if(temp->data->getType()==0)
+        {
+            EnergeticVolume *a = dynamic_cast<EnergeticVolume*>(temp->data);
+             stream<<a->getName()
+             <<QString::number(a->getWeight())
+             <<QString::number(a->getFat())
+             <<QString::number(a->getProteins())
+             <<QString::number(a->getCarbonhydrates())
+             <<QString::number(a->getAcids())
+             <<QString::number(a->getFfibers());
+        }
+        else
+        {
+            Complex *a = dynamic_cast<Complex*>(temp->data);
+            stream<<QString::number(a->hasDessert);
+            stream<<a->dish1.getName()
+            <<QString::number(a->dish1.getWeight())
+            <<QString::number(a->dish1.getFat())
+            <<QString::number(a->dish1.getProteins())
+            <<QString::number(a->dish1.getCarbonhydrates())
+            <<QString::number(a->dish1.getAcids())
+            <<QString::number(a->dish1.getFfibers());
+            stream<<a->dish2.getName()
+            <<QString::number(a->dish2.getWeight())
+            <<QString::number(a->dish2.getFat())
+            <<QString::number(a->dish2.getProteins())
+            <<QString::number(a->dish2.getCarbonhydrates())
+            <<QString::number(a->dish2.getAcids())
+            <<QString::number(a->dish2.getFfibers());
+            stream<<a->dish3.getName()
+            <<QString::number(a->dish3.getWeight())
+            <<QString::number(a->dish3.getFat())
+            <<QString::number(a->dish3.getProteins())
+            <<QString::number(a->dish3.getCarbonhydrates())
+            <<QString::number(a->dish3.getAcids())
+            <<QString::number(a->dish3.getFfibers());
+            if(a->hasDessert)
+            {
+                stream<<a->dish4.getName()
+                <<QString::number(a->dish4.getWeight())
+                <<QString::number(a->dish4.getFat())
+                <<QString::number(a->dish4.getProteins())
+                <<QString::number(a->dish4.getCarbonhydrates())
+                <<QString::number(a->dish4.getAcids())
+                <<QString::number(a->dish4.getFfibers());
+            }
+        }
         temp=nextNode(temp);
     }
     file.close();
@@ -108,12 +149,69 @@ void Tree::load(QString file_name)
         QString _carbonhydrates;
         QString _acids;
         QString _ffibers;
-        stream>>_name>>_weight>>_fat>>_proteins>>_carbonhydrates>>_acids>>_ffibers;
-        EnergeticVolume temp (_name, _weight,
-                              _fat, _proteins,
-                              _carbonhydrates,
-                              _acids, _ffibers);
-        keyInsert(temp);
+        QString type;
+        QString _hasDessert;
+        stream>>type;
+        if(type.toInt()==0)
+        {
+            stream>>_name>>_weight>>_fat>>_proteins>>_carbonhydrates>>_acids>>_ffibers;
+            keyInsert(new EnergeticVolume(_name, _weight,
+                                          _fat, _proteins,
+                                          _carbonhydrates,
+                                          _acids, _ffibers));
+        }
+        else
+        {
+            stream>>_hasDessert;
+            if(_hasDessert.toInt()==0)
+            {
+                 stream>>_name>>_weight>>_fat>>_proteins>>_carbonhydrates>>_acids>>_ffibers;
+                 EnergeticVolume temp1 (_name, _weight,
+                                         _fat, _proteins,
+                                         _carbonhydrates,
+                                         _acids, _ffibers);
+                 stream>>_name>>_weight>>_fat>>_proteins>>_carbonhydrates>>_acids>>_ffibers;
+                 EnergeticVolume temp2 (_name, _weight,
+                                         _fat, _proteins,
+                                         _carbonhydrates,
+                                         _acids, _ffibers);
+                 stream>>_name>>_weight>>_fat>>_proteins>>_carbonhydrates>>_acids>>_ffibers;
+                 EnergeticVolume temp3 (_name, _weight,
+                                         _fat, _proteins,
+                                         _carbonhydrates,
+                                         _acids, _ffibers);
+                 Complex a;
+                 a.show();
+                 keyInsert(new Complex(temp1, temp2, temp3));
+            }
+            else
+            {
+                stream>>_name>>_weight>>_fat>>_proteins>>_carbonhydrates>>_acids>>_ffibers;
+                EnergeticVolume temp1 (_name, _weight,
+                                        _fat, _proteins,
+                                        _carbonhydrates,
+                                        _acids, _ffibers);
+                stream>>_name>>_weight>>_fat>>_proteins>>_carbonhydrates>>_acids>>_ffibers;
+                EnergeticVolume temp2 (_name, _weight,
+                                        _fat, _proteins,
+                                        _carbonhydrates,
+                                        _acids, _ffibers);
+                stream>>_name>>_weight>>_fat>>_proteins>>_carbonhydrates>>_acids>>_ffibers;
+                EnergeticVolume temp3 (_name, _weight,
+                                        _fat, _proteins,
+                                        _carbonhydrates,
+                                        _acids, _ffibers);
+                stream>>_name>>_weight>>_fat>>_proteins>>_carbonhydrates>>_acids>>_ffibers;
+                EnergeticVolume temp4 (_name, _weight,
+                                        _fat, _proteins,
+                                        _carbonhydrates,
+                                        _acids, _ffibers);
+                Complex a;
+                a.show();
+                keyInsert(new Complex(temp1, temp2, temp3, temp4));
+            }
+        }
+
     }
     file.close();
 }
@@ -192,13 +290,13 @@ void Tree::showNode(Node *_root)
     {
         if(!_root->isLeaf){
         showNode(_root->left);
-        _root->data.show();
+        _root->data->show();
         showNode(_root->right);
         }
     }
 }
 
-EnergeticVolume Tree::keySearch(float _key)
+Volume *Tree::keySearch(float _key)
 {
     Node *res = NULL;
     res = nodeSearch(root, _key);
@@ -318,14 +416,15 @@ void Tree::sixDelete(Node* n)
         }
 }
 
-void Tree::keyInsert(EnergeticVolume _data)
+void Tree::keyInsert(Volume *_data)
 {
-    Node* nex = nodeSearch(root, _data.countVolume());
+    Node* nex = _data->getType()==0 ?
+     nodeSearch(root, dynamic_cast<EnergeticVolume*>(_data)->countVolume()) : nodeSearch(root, dynamic_cast<Complex*>(_data)->volume);
     if(!nex)
     {
         Node* temp = new Node;
         temp->data=_data;
-        temp->key = _data.countVolume();
+        temp->key = _data->getType()==0 ?  dynamic_cast<EnergeticVolume*>(_data)->countVolume() :  dynamic_cast<Complex*>(_data)->volume;
         if(!root) root = temp , firstInsert(root);
         else
         {
